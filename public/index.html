@@ -1,0 +1,104 @@
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>哔日头条制作器！哔哩哔哩干杯[]~(￣▽￣)~*</title>
+</head>
+
+<body>
+    <div>
+        <div>
+            <canvas width="960" height="428" id="container">浏览器不支持</canvas>
+        </div>
+        <div>
+            <div>
+                头像：<input type="file" name="avater" id="avater" accept="image/*">
+            </div>
+            <div>
+                主播名：<input type="text" name="name" id="name">
+            </div>
+            <div>
+                房间号：<input type="number" name="roomId" id="roomId">
+            </div>
+            <div>
+                <input type="button" id="save" value="保存">
+            </div>
+        </div>
+    </div>
+    <script>
+        var container = document.getElementById("container");
+        var ctx = container.getContext("2d");
+        var image = new Image();
+        image.onload = function () {
+            ctx.drawImage(image, 0, 0);
+            reDraw();
+        }
+        var canvas2;
+        image.src = "./哔日头条.jpg"
+        var avaterinput = document.getElementById("avater");
+        avaterinput.onchange = function () {
+            if (avaterinput.files[0].type.match('image.*')) {
+                // Read in the image file as a data URL.
+                var fileReader = new FileReader();
+                fileReader.readAsDataURL(avaterinput.files[0]);
+                fileReader.onload = function (evt) {
+                    if (evt.target.readyState == FileReader.DONE) {
+                        var img = new Image();
+                        img.onload = function () {
+                            canvas2 = document.createElement("canvas");
+                            canvas2.width = 280;
+                            canvas2.height = 280;
+                            var ctx2 = canvas2.getContext("2d");
+                            ctx2.beginPath();
+                            ctx2.arc(140, 140, 140, 0, Math.PI * 2, true);
+                            ctx2.closePath();
+                            ctx2.clip();
+                            ctx2.drawImage(img, 0, 0, 280, 280);
+                            reDraw();
+                        }
+                        img.src = evt.target.result;
+                    }
+                }
+            } else {
+                alert("not an image");
+            }
+        }
+        var nameInput = document.getElementById("name");
+        var roomIdInput = document.getElementById("roomId");
+        nameInput.onchange = reDraw;
+        nameInput.oninput = reDraw;
+        roomIdInput.onchange = reDraw;
+        roomIdInput.oninput = reDraw;
+        var top1 = 180 + 68;
+        var top2 = 300 + 24
+        function reDraw() {
+            ctx.drawImage(image, 0, 0);
+            if (canvas2) {
+                ctx.drawImage(canvas2, 66, 76);
+            }
+            ctx.save();
+            ctx.fillStyle = "rgb(113,129,200)";
+            ctx.font = "bold 68px 'Arial,Microsoft YaHei,Microsoft Sans Serif,Microsoft SanSerf,微软雅黑'";
+            ctx.fillText(nameInput.value, 390, top1);
+            ctx.restore();
+            ctx.save();
+            ctx.fillStyle = "rgb(113,129,200)";
+            ctx.font = "48px 'Arial,Microsoft YaHei,Microsoft Sans Serif,Microsoft SanSerf,微软雅黑'";
+            ctx.fillText("RoomID: " + roomIdInput.value, 390, top2);
+            ctx.restore();
+        }
+        var saveButton=document.getElementById("save");
+        saveButton.onclick=function(){
+            container.toBlob(function(e){
+                var a=document.createElement("a");
+                a.href=URL.createObjectURL(e);
+                a.download="哔日头条.jpg";
+                a.click();
+            },"image/jpeg")
+        }
+    </script>
+</body>
+
+</html>
